@@ -1,0 +1,43 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+# Load the data into a pandas DataFrame
+data = pd.read_csv(r"C:\Users\Subhojeet Dutta\Downloads\Online Retail.csv", parse_dates=['InvoiceDate'])
+
+# Drop rows with missing values
+data.dropna(inplace=True)
+
+# Convert 'InvoiceDate' to numeric representation
+data['InvoiceTimestamp'] = data['InvoiceDate'].view('int64') // 10**9
+
+# Extract the features (X) and target variable (y)
+X = data[['CustomerID', 'InvoiceTimestamp']]
+y = data['Quantity']
+
+# Create an instance of the Linear Regression model
+model = LinearRegression()
+
+# Fit the model to the data
+model.fit(X, y)
+
+# Get user input for Customer ID and Date
+customer_id = input("Enter Customer ID: ")
+date = pd.to_datetime(input("Enter Date (DD-MM-YYYY): "), format='%d-%m-%Y')
+
+# Prepare the input for prediction
+input_data = pd.DataFrame({'CustomerID': [customer_id], 'InvoiceTimestamp': [date.timestamp()]})
+
+# Predict the quantity
+predicted_quantity = model.predict(input_data)
+
+# Print the predicted quantity
+print("Predicted Quantity:", predicted_quantity[0])
+
+# Compare with user input
+user_id = int(input("Enter the Customer ID to compare: "))
+user_date = pd.to_datetime(input("Enter the Date to compare (DD-MM-YYYY): "), format='%d-%m-%Y')
+
+if user_id == int(customer_id) and user_date == date:
+    print(y)
+else:
+    print("Wrong Input")
